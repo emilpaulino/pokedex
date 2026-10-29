@@ -30,6 +30,7 @@ class Types extends Table {
 }
 
 @DataClassName('PokemonTypeRow')
+@TableIndex(name: 'idx_pokemon_types_type', columns: {#typeId})
 class PokemonTypes extends Table {
   IntColumn get pokemonId =>
       integer().references(Pokemons, #id, onDelete: KeyAction.cascade)();

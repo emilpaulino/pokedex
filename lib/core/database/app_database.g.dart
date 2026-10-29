@@ -2000,6 +2000,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_pokemon_name',
     'CREATE INDEX idx_pokemon_name ON pokemons (name)',
   );
+  late final Index idxPokemonTypesType = Index(
+    'idx_pokemon_types_type',
+    'CREATE INDEX idx_pokemon_types_type ON pokemon_types (type_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2013,6 +2017,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     favorites,
     syncMetadata,
     idxPokemonName,
+    idxPokemonTypesType,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
