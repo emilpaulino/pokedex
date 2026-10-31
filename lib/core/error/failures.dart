@@ -8,6 +8,16 @@ class NetworkFailure extends Failure {
       : super('Sin conexión a Internet. Mostrando los datos guardados.');
 }
 
+class TimeoutFailure extends Failure {
+  const TimeoutFailure()
+      : super('El servidor tardó demasiado en responder. Intenta de nuevo.');
+}
+
+class RateLimitFailure extends Failure {
+  const RateLimitFailure()
+      : super('Se hicieron demasiadas consultas. Espera un momento.');
+}
+
 class ServerFailure extends Failure {
   const ServerFailure()
       : super('El servidor de Pokémon no está disponible. Intenta más tarde.');

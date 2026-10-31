@@ -3,6 +3,16 @@ class NetworkException implements Exception {
   final String? message;
 }
 
+class RequestTimeoutException implements Exception {
+  const RequestTimeoutException([this.message]);
+  final String? message;
+}
+
+class RateLimitException implements Exception {
+  const RateLimitException([this.message]);
+  final String? message;
+}
+
 class ServerException implements Exception {
   const ServerException([this.message]);
   final String? message;
