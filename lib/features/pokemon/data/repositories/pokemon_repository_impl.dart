@@ -1,12 +1,15 @@
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/pokemon.dart';
 import '../../domain/repositories/pokemon_repository.dart';
 import '../datasources/pokemon_local_data_source.dart';
 import '../mappers/pokemon_mapper.dart';
+import '../sync/pokemon_catalog_sync.dart';
 
 class PokemonRepositoryImpl implements PokemonRepository {
-  PokemonRepositoryImpl(this._local);
+  PokemonRepositoryImpl(this._local, this._sync);
 
   final PokemonLocalDataSource _local;
+  final PokemonCatalogSync _sync;
 
   @override
   Stream<List<Pokemon>> watchPokemons() {
@@ -14,4 +17,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
         .watchPokemons()
         .map((rows) => rows.map(toPokemonEntity).toList());
   }
+
+  @override
+  Future<Failure?> refresh() => _sync.sync();
 }

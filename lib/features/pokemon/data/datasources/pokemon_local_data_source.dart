@@ -39,7 +39,7 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
     try {
       await _db.transaction(() async {
         await _db.batch((batch) {
-          // 1. Tipos y habilidades primero ya las tablas intermedias apuntan a ellos.
+          // 1. Tipos y habilidades primero ya que las tablas intermedias apuntan a ellos.
           for (final dto in page) {
             batch.insertAllOnConflictUpdate(_db.types, toTypeCompanions(dto));
             batch.insertAllOnConflictUpdate(
