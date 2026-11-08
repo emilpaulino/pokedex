@@ -3,14 +3,17 @@ import 'package:drift/drift.dart';
 import '../../../../core/database/app_database.dart';
 import '../dtos/pokemon_dto.dart';
 import '../../domain/entities/pokemon.dart';
+import '../../domain/entities/pokemon_type.dart';
+import '../datasources/pokemon_local_data_source.dart';
 
 PokemonsCompanion toPokemonCompanion(PokemonDto dto, DateTime syncedAt) {
   return PokemonsCompanion(
     id: Value(dto.id),
     name: Value(dto.name),
+    displayName: Value(dto.displayName),
     nationalDexNumber: Value(dto.speciesId),
-    height: Value(dto.height / 10), // Se convierte de decímetros a metros
-    weight: Value(dto.weight / 10), // Se convierte de hectogramos a kilogramos
+    height: Value(dto.height / 10), // decímetros → metros
+    weight: Value(dto.weight / 10), // hectogramos → kilogramos
     artworkUrl: Value(dto.artworkUrl ?? ''),
     updatedAt: Value(syncedAt),
   );
@@ -58,13 +61,20 @@ List<PokemonAbilitiesCompanion> toPokemonAbilityCompanions(PokemonDto dto) {
 }
 
 
-Pokemon toPokemonEntity(PokemonRow row) {
+Pokemon toPokemonEntity(PokemonWithTypes data) {
+  final row = data.pokemon;
   return Pokemon(
     id: row.id,
     name: row.name,
+    displayName: row.displayName,
     nationalDexNumber: row.nationalDexNumber,
     height: row.height,
     weight: row.weight,
     artworkUrl: row.artworkUrl,
+    types: data.types.map(toPokemonTypeEntity).toList(),
   );
+}
+
+PokemonType toPokemonTypeEntity(TypeRow row) {
+  return PokemonType(id: row.id, name: row.name);
 }

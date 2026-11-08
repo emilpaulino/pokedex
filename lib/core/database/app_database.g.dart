@@ -27,6 +27,17 @@ class $PokemonsTable extends Pokemons
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _nationalDexNumberMeta = const VerificationMeta(
     'nationalDexNumber',
   );
@@ -82,6 +93,7 @@ class $PokemonsTable extends Pokemons
   List<GeneratedColumn> get $columns => [
     id,
     name,
+    displayName,
     nationalDexNumber,
     height,
     weight,
@@ -110,6 +122,17 @@ class $PokemonsTable extends Pokemons
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNameMeta);
     }
     if (data.containsKey('national_dex_number')) {
       context.handle(
@@ -175,6 +198,10 @@ class $PokemonsTable extends Pokemons
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      )!,
       nationalDexNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}national_dex_number'],
@@ -207,6 +234,7 @@ class $PokemonsTable extends Pokemons
 class PokemonRow extends DataClass implements Insertable<PokemonRow> {
   final int id;
   final String name;
+  final String displayName;
   final int nationalDexNumber;
   final double height;
   final double weight;
@@ -215,6 +243,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
   const PokemonRow({
     required this.id,
     required this.name,
+    required this.displayName,
     required this.nationalDexNumber,
     required this.height,
     required this.weight,
@@ -226,6 +255,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['display_name'] = Variable<String>(displayName);
     map['national_dex_number'] = Variable<int>(nationalDexNumber);
     map['height'] = Variable<double>(height);
     map['weight'] = Variable<double>(weight);
@@ -238,6 +268,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     return PokemonsCompanion(
       id: Value(id),
       name: Value(name),
+      displayName: Value(displayName),
       nationalDexNumber: Value(nationalDexNumber),
       height: Value(height),
       weight: Value(weight),
@@ -254,6 +285,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     return PokemonRow(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      displayName: serializer.fromJson<String>(json['displayName']),
       nationalDexNumber: serializer.fromJson<int>(json['nationalDexNumber']),
       height: serializer.fromJson<double>(json['height']),
       weight: serializer.fromJson<double>(json['weight']),
@@ -267,6 +299,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'displayName': serializer.toJson<String>(displayName),
       'nationalDexNumber': serializer.toJson<int>(nationalDexNumber),
       'height': serializer.toJson<double>(height),
       'weight': serializer.toJson<double>(weight),
@@ -278,6 +311,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
   PokemonRow copyWith({
     int? id,
     String? name,
+    String? displayName,
     int? nationalDexNumber,
     double? height,
     double? weight,
@@ -286,6 +320,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
   }) => PokemonRow(
     id: id ?? this.id,
     name: name ?? this.name,
+    displayName: displayName ?? this.displayName,
     nationalDexNumber: nationalDexNumber ?? this.nationalDexNumber,
     height: height ?? this.height,
     weight: weight ?? this.weight,
@@ -296,6 +331,9 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     return PokemonRow(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
       nationalDexNumber: data.nationalDexNumber.present
           ? data.nationalDexNumber.value
           : this.nationalDexNumber,
@@ -313,6 +351,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
     return (StringBuffer('PokemonRow(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('displayName: $displayName, ')
           ..write('nationalDexNumber: $nationalDexNumber, ')
           ..write('height: $height, ')
           ..write('weight: $weight, ')
@@ -326,6 +365,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
   int get hashCode => Object.hash(
     id,
     name,
+    displayName,
     nationalDexNumber,
     height,
     weight,
@@ -338,6 +378,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
       (other is PokemonRow &&
           other.id == this.id &&
           other.name == this.name &&
+          other.displayName == this.displayName &&
           other.nationalDexNumber == this.nationalDexNumber &&
           other.height == this.height &&
           other.weight == this.weight &&
@@ -348,6 +389,7 @@ class PokemonRow extends DataClass implements Insertable<PokemonRow> {
 class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> displayName;
   final Value<int> nationalDexNumber;
   final Value<double> height;
   final Value<double> weight;
@@ -356,6 +398,7 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
   const PokemonsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.displayName = const Value.absent(),
     this.nationalDexNumber = const Value.absent(),
     this.height = const Value.absent(),
     this.weight = const Value.absent(),
@@ -365,12 +408,14 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
   PokemonsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    required String displayName,
     required int nationalDexNumber,
     required double height,
     required double weight,
     required String artworkUrl,
     required DateTime updatedAt,
   }) : name = Value(name),
+       displayName = Value(displayName),
        nationalDexNumber = Value(nationalDexNumber),
        height = Value(height),
        weight = Value(weight),
@@ -379,6 +424,7 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
   static Insertable<PokemonRow> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? displayName,
     Expression<int>? nationalDexNumber,
     Expression<double>? height,
     Expression<double>? weight,
@@ -388,6 +434,7 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (displayName != null) 'display_name': displayName,
       if (nationalDexNumber != null) 'national_dex_number': nationalDexNumber,
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
@@ -399,6 +446,7 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
   PokemonsCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
+    Value<String>? displayName,
     Value<int>? nationalDexNumber,
     Value<double>? height,
     Value<double>? weight,
@@ -408,6 +456,7 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
     return PokemonsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      displayName: displayName ?? this.displayName,
       nationalDexNumber: nationalDexNumber ?? this.nationalDexNumber,
       height: height ?? this.height,
       weight: weight ?? this.weight,
@@ -424,6 +473,9 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
     }
     if (nationalDexNumber.present) {
       map['national_dex_number'] = Variable<int>(nationalDexNumber.value);
@@ -448,6 +500,7 @@ class PokemonsCompanion extends UpdateCompanion<PokemonRow> {
     return (StringBuffer('PokemonsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('displayName: $displayName, ')
           ..write('nationalDexNumber: $nationalDexNumber, ')
           ..write('height: $height, ')
           ..write('weight: $weight, ')
@@ -1996,9 +2049,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $FavoritesTable favorites = $FavoritesTable(this);
   late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
-  late final Index idxPokemonName = Index(
-    'idx_pokemon_name',
-    'CREATE INDEX idx_pokemon_name ON pokemons (name)',
+  late final Index idxPokemonDisplayName = Index(
+    'idx_pokemon_display_name',
+    'CREATE INDEX idx_pokemon_display_name ON pokemons (display_name)',
   );
   late final Index idxPokemonTypesType = Index(
     'idx_pokemon_types_type',
@@ -2016,7 +2069,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pokemonAbilities,
     favorites,
     syncMetadata,
-    idxPokemonName,
+    idxPokemonDisplayName,
     idxPokemonTypesType,
   ];
   @override
@@ -2041,6 +2094,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$PokemonsTableCreateCompanionBuilder = PokemonsCompanion Function({
   Value<int> id,
   required String name,
+  required String displayName,
   required int nationalDexNumber,
   required double height,
   required double weight,
@@ -2050,6 +2104,7 @@ typedef $$PokemonsTableCreateCompanionBuilder = PokemonsCompanion Function({
 typedef $$PokemonsTableUpdateCompanionBuilder = PokemonsCompanion Function({
   Value<int> id,
   Value<String> name,
+  Value<String> displayName,
   Value<int> nationalDexNumber,
   Value<double> height,
   Value<double> weight,
@@ -2134,6 +2189,11 @@ class $$PokemonsTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2257,6 +2317,11 @@ class $$PokemonsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get nationalDexNumber => $composableBuilder(
     column: $table.nationalDexNumber,
     builder: (column) => ColumnOrderings(column),
@@ -2297,6 +2362,11 @@ class $$PokemonsTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get nationalDexNumber => $composableBuilder(
     column: $table.nationalDexNumber,
@@ -2427,6 +2497,7 @@ class $$PokemonsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
                 Value<int> nationalDexNumber = const Value.absent(),
                 Value<double> height = const Value.absent(),
                 Value<double> weight = const Value.absent(),
@@ -2435,6 +2506,7 @@ class $$PokemonsTableTableManager
               }) => PokemonsCompanion(
                 id: id,
                 name: name,
+                displayName: displayName,
                 nationalDexNumber: nationalDexNumber,
                 height: height,
                 weight: weight,
@@ -2445,6 +2517,7 @@ class $$PokemonsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
+                required String displayName,
                 required int nationalDexNumber,
                 required double height,
                 required double weight,
@@ -2453,6 +2526,7 @@ class $$PokemonsTableTableManager
               }) => PokemonsCompanion.insert(
                 id: id,
                 name: name,
+                displayName: displayName,
                 nationalDexNumber: nationalDexNumber,
                 height: height,
                 weight: weight,

@@ -7,9 +7,16 @@ import '../../../../core/error/exceptions.dart';
 import '../dtos/pokemon_dto.dart';
 import '../mappers/pokemon_mapper.dart';
 
+class PokemonWithTypes {
+  PokemonWithTypes(this.pokemon, this.types);
+
+  final PokemonRow pokemon;
+  final List<TypeRow> types;
+}
+
 abstract class PokemonLocalDataSource {
-  /// Lista de Pokémon ordenada por número. Se actualiza sola al cambiar.
-  Stream<List<PokemonRow>> watchPokemons();
+  /// Pokémon con sus tipos, ordenados por número.
+  Stream<List<PokemonWithTypes>> watchPokemons();
 
   /// Guarda una página de la API sin duplicar nada.
   Future<void> savePokemonPage(List<PokemonDto> page, DateTime syncedAt);
@@ -26,10 +33,40 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
   final AppDatabase _db;
 
   @override
-  Stream<List<PokemonRow>> watchPokemons() {
-    final query = _db.select(_db.pokemons)
-      ..orderBy([(p) => OrderingTerm.asc(p.nationalDexNumber)]);
-    return query.watch();
+  Stream<List<PokemonWithTypes>> watchPokemons() {
+    // Una sola consulta que une Pokemons + PokemonTypes + Types.
+    final query = _db.select(_db.pokemons).join([
+      leftOuterJoin(
+        _db.pokemonTypes,
+        _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
+      ),
+      leftOuterJoin(
+        _db.types,
+        _db.types.id.equalsExp(_db.pokemonTypes.typeId),
+      ),
+    ])
+      ..orderBy([
+        OrderingTerm.asc(_db.pokemons.nationalDexNumber),
+        OrderingTerm.asc(_db.pokemonTypes.slot),
+      ]);
+
+    return query.watch().map((rows) {
+      // Agrupa las filas: un Pokémon con todos sus tipos.
+      final result = <int, PokemonWithTypes>{};
+
+      for (final row in rows) {
+        final pokemon = row.readTable(_db.pokemons);
+        final type = row.readTableOrNull(_db.types);
+
+        final entry = result.putIfAbsent(
+          pokemon.id,
+              () => PokemonWithTypes(pokemon, []),
+        );
+        if (type != null) entry.types.add(type);
+      }
+
+      return result.values.toList();
+    });
   }
 
   @override

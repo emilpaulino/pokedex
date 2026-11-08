@@ -2,6 +2,7 @@ class PokemonDto {
   const PokemonDto({
     required this.id,
     required this.name,
+    required this.displayName,
     required this.height,
     required this.weight,
     required this.speciesId,
@@ -12,6 +13,7 @@ class PokemonDto {
 
   final int id;
   final String name;
+  final String displayName;
   final int height;
   final int weight;
   final int speciesId;
@@ -21,10 +23,18 @@ class PokemonDto {
 
   factory PokemonDto.fromJson(Map<String, dynamic> json) {
     final sprites = json['pokemonsprites'] as List<dynamic>;
+    final name = json['name'] as String;
+
+    final species = json['pokemonspecy'] as Map<String, dynamic>?;
+    final officialNames = species?['pokemonspeciesnames'] as List<dynamic>? ?? [];
 
     return PokemonDto(
       id: json['id'] as int,
-      name: json['name'] as String,
+      name: name,
+      // Si la API no trae el nombre oficial, se usa el nombre normal.
+      displayName: officialNames.isEmpty
+          ? name
+          : (officialNames.first as Map<String, dynamic>)['name'] as String,
       height: json['height'] as int,
       weight: json['weight'] as int,
       speciesId: json['pokemon_species_id'] as int,

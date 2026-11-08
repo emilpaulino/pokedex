@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../features/pokemon/presentation/providers/catalog_sync_provider.dart';
 import 'router.dart';
 import 'theme.dart';
 
-class PokedexApp extends StatelessWidget {
+class PokedexApp extends ConsumerStatefulWidget {
   const PokedexApp({super.key});
+
+  @override
+  ConsumerState<PokedexApp> createState() => _PokedexAppState();
+}
+
+class _PokedexAppState extends ConsumerState<PokedexApp> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.read(catalogSyncProvider.notifier).refresh());
+  }
 
   @override
   Widget build(BuildContext context) {

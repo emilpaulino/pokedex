@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/pokemon.dart';
 import '../providers/pokemon_list_provider.dart';
 import '../widgets/pokemon_card.dart';
-
+import '../../../../app/theme.dart';
 class PokemonListPage extends ConsumerWidget {
   const PokemonListPage({super.key});
 
@@ -99,8 +99,8 @@ class _PokemonGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         return PokemonCard(
           pokemon: pokemons[index],
-          // Color provisional hasta tener los tipos en el dominio.
-          color: Theme.of(context).colorScheme.primary,
+          color: pokemonTypeColors[pokemons[index].primaryType?.name] ??
+              cardFallbackColor,
         );
       },
     );

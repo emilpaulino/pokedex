@@ -11,6 +11,11 @@ query FetchPokemonPage($limit: Int!, $offset: Int!) {
     height
     weight
     pokemon_species_id
+    pokemonspecy {
+      pokemonspeciesnames(where: {language: {name: {_eq: "en"}}}) {
+        name
+      }
+    }
     pokemonsprites {
       sprites(path: "other.official-artwork.front_default")
     }

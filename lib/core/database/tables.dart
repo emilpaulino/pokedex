@@ -2,10 +2,11 @@
 import 'package:drift/drift.dart';
 
 @DataClassName('PokemonRow')
-@TableIndex(name: 'idx_pokemon_name', columns: {#name})
+@TableIndex(name: 'idx_pokemon_display_name', columns: {#displayName})
 class Pokemons extends Table {
   IntColumn get id => integer()();
-  TextColumn get name => text()();
+  TextColumn get name => text()(); // nombre interno de la API
+  TextColumn get displayName => text()(); // nombre oficial
   IntColumn get nationalDexNumber => integer()();
   RealColumn get height => real()(); // metros
   RealColumn get weight => real()(); // kilogramos
