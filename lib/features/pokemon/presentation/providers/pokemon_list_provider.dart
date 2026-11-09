@@ -16,3 +16,8 @@ final pokemonRepositoryProvider = Provider<PokemonRepository>((ref) {
 final pokemonListProvider = StreamProvider<List<Pokemon>>((ref) {
   return ref.watch(pokemonRepositoryProvider).watchPokemons();
 });
+
+/// Hora de la última sincronización
+final lastSyncProvider = StreamProvider<DateTime?>((ref) {
+  return ref.watch(pokemonRepositoryProvider).watchLastSync();
+});

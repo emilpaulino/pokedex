@@ -23,6 +23,6 @@ class CatalogSyncController extends Notifier<CatalogSyncState> {
 }
 
 final catalogSyncProvider =
-NotifierProvider<CatalogSyncController, CatalogSyncState>(
-  CatalogSyncController.new,
-);
+    NotifierProvider<CatalogSyncController, CatalogSyncState>(
+      CatalogSyncController.new,
+    );

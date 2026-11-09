@@ -16,6 +16,9 @@ class FakePokemonRepository implements PokemonRepository {
 
   @override
   Future<Failure?> refresh() async => null;
+
+  @override
+  Stream<DateTime?> watchLastSync() => Stream.value(null);
 }
 
 /// Monitor falso: siempre "en línea", sin consultar la red.

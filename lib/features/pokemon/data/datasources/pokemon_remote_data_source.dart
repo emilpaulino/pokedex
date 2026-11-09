@@ -32,12 +32,14 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
     final QueryResult result;
 
     try {
-      result = await _client.query(
-        QueryOptions(
-          document: gql(fetchPokemonPageQuery),
-          variables: {'limit': limit, 'offset': offset},
-        ),
-      ).timeout(requestTimeout);
+      result = await _client
+          .query(
+            QueryOptions(
+              document: gql(fetchPokemonPageQuery),
+              variables: {'limit': limit, 'offset': offset},
+            ),
+          )
+          .timeout(requestTimeout);
     } on TimeoutException {
       throw const RequestTimeoutException();
     }
@@ -74,7 +76,7 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
 }
 
 final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
-    ref,
-    ) {
+  ref,
+) {
   return PokemonRemoteDataSourceImpl(ref.watch(graphQLClientProvider));
 });

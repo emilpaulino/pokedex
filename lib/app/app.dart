@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
+
 import '../features/pokemon/presentation/providers/catalog_sync_provider.dart';
 import '../core/connectivity/connection_monitor.dart';
 import '../core/connectivity/connection_status.dart';
@@ -27,10 +27,9 @@ class _PokedexAppState extends ConsumerState<PokedexApp> {
     ref.listen<ConnectionStatus>(connectionMonitorProvider, (previous, next) {
       final recovered =
           next == ConnectionStatus.online &&
-              (previous == ConnectionStatus.offline ||
-                  previous == ConnectionStatus.serviceUnavailable);
+          (previous == ConnectionStatus.offline ||
+              previous == ConnectionStatus.serviceUnavailable);
       if (recovered) {
-        debugPrint('[Conexión] Recuperada: sincronizando el catálogo');
         ref.read(catalogSyncProvider.notifier).refresh();
       }
     });

@@ -29,11 +29,11 @@ List<PokemonTypesCompanion> toPokemonTypeCompanions(PokemonDto dto) {
   return dto.types
       .map(
         (t) => PokemonTypesCompanion(
-      pokemonId: Value(dto.id),
-      typeId: Value(t.typeId),
-      slot: Value(t.slot),
-    ),
-  )
+          pokemonId: Value(dto.id),
+          typeId: Value(t.typeId),
+          slot: Value(t.slot),
+        ),
+      )
       .toList();
 }
 
@@ -41,10 +41,10 @@ List<AbilitiesCompanion> toAbilityCompanions(PokemonDto dto) {
   return dto.abilities
       .map(
         (a) => AbilitiesCompanion(
-      id: Value(a.abilityId),
-      name: Value(a.abilityName),
-    ),
-  )
+          id: Value(a.abilityId),
+          name: Value(a.abilityName),
+        ),
+      )
       .toList();
 }
 
@@ -52,14 +52,13 @@ List<PokemonAbilitiesCompanion> toPokemonAbilityCompanions(PokemonDto dto) {
   return dto.abilities
       .map(
         (a) => PokemonAbilitiesCompanion(
-      pokemonId: Value(dto.id),
-      abilityId: Value(a.abilityId),
-      isHidden: Value(a.isHidden),
-    ),
-  )
+          pokemonId: Value(dto.id),
+          abilityId: Value(a.abilityId),
+          isHidden: Value(a.isHidden),
+        ),
+      )
       .toList();
 }
-
 
 Pokemon toPokemonEntity(PokemonWithTypes data) {
   final row = data.pokemon;

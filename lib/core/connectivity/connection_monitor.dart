@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../network/graphql_client_provider.dart';
 import 'api_health_check.dart';
 import 'connection_status.dart';
 
-/// Vigila la red y comprueba si PokeAPI responde.
 class ConnectionMonitor extends Notifier<ConnectionStatus> {
   final _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _subscription;
@@ -16,12 +16,12 @@ class ConnectionMonitor extends Notifier<ConnectionStatus> {
 
   @override
   ConnectionStatus build() {
-    // Avisar cada vez que cambie la red (Wi-Fi, datos, sin red).
+    // Cuando cambie la red, volver a comprobar.
     _subscription = _connectivity.onConnectivityChanged.listen(
-          (_) => _checkAfterWaiting(),
+      (_) => _checkAfterWaiting(),
     );
 
-    // Mientras no esté en línea, volver a comprobar cada 30 s.
+    // Mientras no esté en línea, vuelve a comprobar cada 30s.
     _retryTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       if (state != ConnectionStatus.online) checkNow();
     });
@@ -38,40 +38,25 @@ class ConnectionMonitor extends Notifier<ConnectionStatus> {
     return ConnectionStatus.checking;
   }
 
-  /// Espera 1.5s antes de comprobar, por si la red parpadea
   void _checkAfterWaiting() {
     _waitTimer?.cancel();
     _waitTimer = Timer(const Duration(milliseconds: 1500), checkNow);
   }
 
-  /// Primero le pregunta a PokeAPI, si no responde, revisa la red para saber
-  /// por qué.
   Future<void> checkNow() async {
-    final apiResponds = await isPokeApiReachable(
-      ref.read(graphQLClientProvider),
-    );
-    if (apiResponds) {
-      _update(ConnectionStatus.online);
-      return;
-    }
-
-    // PokeAPI no respondió: ¿es porque no hay red o porque falla el servicio?
-    final results = await _connectivity.checkConnectivity();
-    final hasNetwork = results.any((r) => r != ConnectivityResult.none);
-    _update(
-      hasNetwork ? ConnectionStatus.serviceUnavailable : ConnectionStatus.offline,
-    );
+    final status = await checkPokeApi(ref.read(graphQLClientProvider));
+    _update(status);
   }
 
-  /// Solo cambia el estado si es distinto
   void _update(ConnectionStatus status) {
     if (state != status) {
+      debugPrint('[Conexión] ${state.name} → ${status.name}');
       state = status;
     }
   }
 }
 
 final connectionMonitorProvider =
-NotifierProvider<ConnectionMonitor, ConnectionStatus>(
-  ConnectionMonitor.new,
-);
+    NotifierProvider<ConnectionMonitor, ConnectionStatus>(
+      ConnectionMonitor.new,
+    );

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/pokemon.dart';
 import '../providers/pokemon_list_provider.dart';
 import '../widgets/pokemon_card.dart';
 import '../../../../app/theme.dart';
 import '../providers/catalog_sync_provider.dart';
+import '../../../../app/widgets/connection_indicator.dart';
 
 class PokemonListPage extends ConsumerWidget {
   const PokemonListPage({super.key});
@@ -29,14 +31,10 @@ class PokemonListPage extends ConsumerWidget {
             letterSpacing: -0.5,
           ),
         ),
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.catching_pokemon),
-              tooltip: 'Pokédex',
-            ),
+            padding: EdgeInsets.only(right: 12),
+            child: ConnectionIndicator(),
           ),
         ],
       ),
@@ -51,9 +49,7 @@ class PokemonListPage extends ConsumerWidget {
                 hintText: 'Buscar Pokémon',
                 prefixIcon: const Icon(Icons.search),
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 filled: true,
                 fillColor: const Color(0xFFEDEEF2),
                 border: OutlineInputBorder(
@@ -81,7 +77,8 @@ class PokemonListPage extends ConsumerWidget {
                     icon: sync.failure == null
                         ? Icons.catching_pokemon
                         : Icons.cloud_off,
-                    message: sync.failure?.message ??
+                    message:
+                        sync.failure?.message ??
                         'Aún no hay Pokémon guardados. '
                             'Conéctate a Internet y toca Reintentar.',
                     onRetry: () =>
@@ -117,8 +114,8 @@ class _PokemonList extends StatelessWidget {
         final pokemon = pokemons[index];
         return PokemonCard(
           pokemon: pokemon,
-          color: pokemonTypeColors[pokemon.primaryType?.name] ??
-              cardFallbackColor,
+          color:
+              pokemonTypeColors[pokemon.primaryType?.name] ?? cardFallbackColor,
         );
       },
     );

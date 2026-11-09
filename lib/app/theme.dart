@@ -30,3 +30,10 @@ const pokemonTypeColors = <String, Color>{
   'steel': Color(0xFFB8B8D0),
   'fairy': Color(0xFFEE99AC),
 };
+
+/// Colores del indicador de conexión
+const statusOnlineColor = Color(0xFF2E7D32); // verde
+const statusOfflineColor = Color(0xFF616161); // gris
+const statusUnavailableColor = Color(0xFFE65100); // naranja
+const statusSyncingColor = Color(0xFF1565C0); // azul
+const statusCheckingColor = Color(0xFF9E9E9E); // gris claro

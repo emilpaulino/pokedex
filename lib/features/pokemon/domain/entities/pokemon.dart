@@ -22,5 +22,4 @@ class Pokemon {
   });
 
   PokemonType? get primaryType => types.isEmpty ? null : types.first;
-
 }

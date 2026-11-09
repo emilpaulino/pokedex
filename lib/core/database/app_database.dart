@@ -36,7 +36,5 @@ class AppDatabase extends _$AppDatabase {
 }
 
 QueryExecutor _openConnection() {
-  return driftDatabase(
-    name: 'pokedex_database',
-  );
+  return driftDatabase(name: 'pokedex_database');
 }

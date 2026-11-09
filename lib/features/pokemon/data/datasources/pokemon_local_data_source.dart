@@ -35,20 +35,20 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
   @override
   Stream<List<PokemonWithTypes>> watchPokemons() {
     // Una sola consulta que une Pokemons + PokemonTypes + Types.
-    final query = _db.select(_db.pokemons).join([
-      leftOuterJoin(
-        _db.pokemonTypes,
-        _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
-      ),
-      leftOuterJoin(
-        _db.types,
-        _db.types.id.equalsExp(_db.pokemonTypes.typeId),
-      ),
-    ])
-      ..orderBy([
-        OrderingTerm.asc(_db.pokemons.nationalDexNumber),
-        OrderingTerm.asc(_db.pokemonTypes.slot),
-      ]);
+    final query =
+        _db.select(_db.pokemons).join([
+          leftOuterJoin(
+            _db.pokemonTypes,
+            _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
+          ),
+          leftOuterJoin(
+            _db.types,
+            _db.types.id.equalsExp(_db.pokemonTypes.typeId),
+          ),
+        ])..orderBy([
+          OrderingTerm.asc(_db.pokemons.nationalDexNumber),
+          OrderingTerm.asc(_db.pokemonTypes.slot),
+        ]);
 
     return query.watch().map((rows) {
       // Agrupa las filas: un Pokémon con todos sus tipos.
@@ -60,7 +60,7 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
 
         final entry = result.putIfAbsent(
           pokemon.id,
-              () => PokemonWithTypes(pokemon, []),
+          () => PokemonWithTypes(pokemon, []),
         );
         if (type != null) entry.types.add(type);
       }

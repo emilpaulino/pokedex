@@ -1,4 +1,3 @@
-
 import 'package:drift/drift.dart';
 
 @DataClassName('PokemonRow')
@@ -18,7 +17,9 @@ class Pokemons extends Table {
 
   // Evita números nacionales duplicados.
   @override
-  List<Set<Column>> get uniqueKeys => [{nationalDexNumber}];
+  List<Set<Column>> get uniqueKeys => [
+    {nationalDexNumber},
+  ];
 }
 
 @DataClassName('TypeRow')
@@ -43,7 +44,7 @@ class PokemonTypes extends Table {
 }
 
 @DataClassName('AbilityRow')
-class Abilities extends Table{
+class Abilities extends Table {
   IntColumn get id => integer()();
   TextColumn get name => text()();
   TextColumn get effectSummary => text().nullable()();

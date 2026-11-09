@@ -13,9 +13,16 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   @override
   Stream<List<Pokemon>> watchPokemons() {
+    return _local.watchPokemons().map(
+      (rows) => rows.map(toPokemonEntity).toList(),
+    );
+  }
+
+  @override
+  Stream<DateTime?> watchLastSync() {
     return _local
-        .watchPokemons()
-        .map((rows) => rows.map(toPokemonEntity).toList());
+        .watchSyncMetadata(PokemonCatalogSync.key)
+        .map((row) => row?.lastSuccessAt);
   }
 
   @override

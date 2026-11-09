@@ -26,7 +26,8 @@ class PokemonDto {
     final name = json['name'] as String;
 
     final species = json['pokemonspecy'] as Map<String, dynamic>?;
-    final officialNames = species?['pokemonspeciesnames'] as List<dynamic>? ?? [];
+    final officialNames =
+        species?['pokemonspeciesnames'] as List<dynamic>? ?? [];
 
     return PokemonDto(
       id: json['id'] as int,

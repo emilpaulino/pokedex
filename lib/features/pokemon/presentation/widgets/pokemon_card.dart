@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../app/theme.dart';
 import '../../domain/entities/pokemon.dart';
 
@@ -115,9 +116,8 @@ class _TypeChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             _capitalize(name),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Colors.black87,
-            ),
+            style: Theme.of(context).textTheme.labelMedium
+                ?.copyWith(color: Colors.black87),
           ),
         ],
       ),
