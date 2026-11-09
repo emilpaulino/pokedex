@@ -30,7 +30,7 @@ class _PokedexAppState extends ConsumerState<PokedexApp> {
           (previous == ConnectionStatus.offline ||
               previous == ConnectionStatus.serviceUnavailable);
       if (recovered) {
-        ref.read(catalogSyncProvider.notifier).refresh(force: true);
+        ref.read(catalogSyncProvider.notifier).refresh();
       }
     });
     return MaterialApp.router(

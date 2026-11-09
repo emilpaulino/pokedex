@@ -26,5 +26,5 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
-  Future<Failure?> refresh({bool force = false}) => _sync.sync(force: force);
+  Future<Failure?> refresh() => _sync.sync();
 }

@@ -17,12 +17,11 @@ class PokemonCatalogSync {
 
   static const key = 'pokemon_catalog';
   static const pageSize = 200;
-  static const maxAge = Duration(hours: 24);
 
   bool _isRunning = false;
 
   /// Devuelve null si todo salió bien, o un Failure si algo falló.
-  Future<Failure?> sync({bool force = false}) async {
+  Future<Failure?> sync() async {
     // Si ya hay una sincronización en curso, no se empieza otra.
     if (_isRunning) return null;
     _isRunning = true;
@@ -32,7 +31,6 @@ class PokemonCatalogSync {
       // Empezar donde se quedó la última vez (0 si es la primera).
       final previous = await local.getSyncMetadata(key);
       offset = previous?.cursorOrOffset ?? 0;
-      if (!force && _isFresh(previous)) return null;
       final syncedAt = DateTime.now();
 
       // Pedir y guardar página por página.
@@ -61,14 +59,6 @@ class PokemonCatalogSync {
     } finally {
       _isRunning = false;
     }
-  }
-
-  /// Función para verificar si los datos estan completos y son recientes
-  bool _isFresh(SyncMetadataRow? row) {
-    final last = row?.lastSuccessAt;
-    if (row == null || last == null) return false; // nunca terminó
-    if (row.status != SyncStatus.success) return false; // quedó a medias
-    return DateTime.now().difference(last) < maxAge;
   }
 
   /// Anota el estado y el offset en SyncMetadata.
