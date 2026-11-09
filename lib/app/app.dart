@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:flutter/foundation.dart';
 import '../features/pokemon/presentation/providers/catalog_sync_provider.dart';
+import '../core/connectivity/connection_monitor.dart';
+import '../core/connectivity/connection_status.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -21,6 +23,17 @@ class _PokedexAppState extends ConsumerState<PokedexApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Al recuperar la conexión, sincroniza sola.
+    ref.listen<ConnectionStatus>(connectionMonitorProvider, (previous, next) {
+      final recovered =
+          next == ConnectionStatus.online &&
+              (previous == ConnectionStatus.offline ||
+                  previous == ConnectionStatus.serviceUnavailable);
+      if (recovered) {
+        debugPrint('[Conexión] Recuperada: sincronizando el catálogo');
+        ref.read(catalogSyncProvider.notifier).refresh();
+      }
+    });
     return MaterialApp.router(
       title: 'Pokédex',
       theme: buildAppTheme(),
