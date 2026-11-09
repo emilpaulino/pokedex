@@ -65,7 +65,7 @@ class PokemonListPage extends ConsumerWidget {
               child: pokemons.when(
                 data: (list) => list.isEmpty
                     ? const _EmptyState()
-                    : _PokemonGrid(pokemons: list),
+                    : _PokemonList(pokemons: list),
                 loading: () => const Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -81,25 +81,21 @@ class PokemonListPage extends ConsumerWidget {
   }
 }
 
-class _PokemonGrid extends StatelessWidget {
-  final List<Pokemon> pokemons;
+class _PokemonList extends StatelessWidget {
+  const _PokemonList({required this.pokemons});
 
-  const _PokemonGrid({required this.pokemons});
+  final List<Pokemon> pokemons;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return ListView.separated(
       itemCount: pokemons.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 0.85,
-      ),
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
+        final pokemon = pokemons[index];
         return PokemonCard(
-          pokemon: pokemons[index],
-          color: pokemonTypeColors[pokemons[index].primaryType?.name] ??
+          pokemon: pokemon,
+          color: pokemonTypeColors[pokemon.primaryType?.name] ??
               cardFallbackColor,
         );
       },
