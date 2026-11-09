@@ -76,7 +76,8 @@ class PokemonListPage extends ConsumerWidget {
                         sync.failure?.message ??
                         'Aún no hay Pokémon guardados. '
                             'Conéctate a Internet y toca Reintentar.',
-                    onRetry: () => ref.read(catalogSyncProvider.notifier).refresh(),
+                    onRetry: () =>
+                        ref.read(catalogSyncProvider.notifier).refresh(),
                   );
                 },
                 loading: () => const _LoadingState(message: 'Cargando…'),
