@@ -13,6 +13,7 @@ class ConnectionMonitor extends Notifier<ConnectionStatus> {
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   Timer? _waitTimer;
   Timer? _retryTimer;
+  bool _isChecking = false;
 
   @override
   ConnectionStatus build() {
@@ -44,8 +45,14 @@ class ConnectionMonitor extends Notifier<ConnectionStatus> {
   }
 
   Future<void> checkNow() async {
-    final status = await checkPokeApi(ref.read(graphQLClientProvider));
-    _update(status);
+    if (_isChecking) return;
+    _isChecking = true;
+    try {
+      final status = await checkPokeApi(ref.read(graphQLClientProvider));
+      _update(status);
+    } finally {
+      _isChecking = false;
+    }
   }
 
   void _update(ConnectionStatus status) {

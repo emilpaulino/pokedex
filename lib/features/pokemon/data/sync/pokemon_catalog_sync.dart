@@ -92,4 +92,3 @@ final pokemonCatalogSyncProvider = Provider<PokemonCatalogSync>((ref) {
     ref.watch(pokemonLocalDataSourceProvider),
   );
 });
-

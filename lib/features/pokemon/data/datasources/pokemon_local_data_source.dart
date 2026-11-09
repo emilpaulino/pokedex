@@ -34,7 +34,7 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
 
   @override
   Stream<List<PokemonWithTypes>> watchPokemons() {
-    // Una sola consulta que une Pokemons + PokemonTypes + Types.
+    // Una sola consulta que une Pokemons, PokemonTypes y Types.
     final query =
         _db.select(_db.pokemons).join([
           leftOuterJoin(
@@ -51,7 +51,7 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
         ]);
 
     return query.watch().map((rows) {
-      // Agrupa las filas: un Pokémon con todos sus tipos.
+      // Agrupa un Pokémon con todos sus tipos.
       final result = <int, PokemonWithTypes>{};
 
       for (final row in rows) {
@@ -73,27 +73,32 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
   Future<void> savePokemonPage(List<PokemonDto> page, DateTime syncedAt) async {
     final ids = page.map((dto) => dto.id).toList();
 
+    // Un solo registro por tipo y por habilidad.
+    final types = <int, TypesCompanion>{};
+    final abilities = <int, AbilitiesCompanion>{};
+    for (final dto in page) {
+      for (final type in toTypeCompanions(dto)) {
+        types[type.id.value] = type;
+      }
+      for (final ability in toAbilityCompanions(dto)) {
+        abilities[ability.id.value] = ability;
+      }
+    }
+
     try {
       await _db.transaction(() async {
         await _db.batch((batch) {
-          // 1. Tipos y habilidades primero ya que las tablas intermedias apuntan a ellos.
-          for (final dto in page) {
-            batch.insertAllOnConflictUpdate(_db.types, toTypeCompanions(dto));
-            batch.insertAllOnConflictUpdate(
-              _db.abilities,
-              toAbilityCompanions(dto),
-            );
-          }
+          // Tipos y habilidades primero ya que las tablas intermedias apuntan a ellos.
+          batch.insertAllOnConflictUpdate(_db.types, types.values.toList());
+          batch.insertAllOnConflictUpdate(
+            _db.abilities,
+            abilities.values.toList(),
+          );
 
-          // 2. Los Pokémon (insertar o actualizar).
-          for (final dto in page) {
-            batch.insertAllOnConflictUpdate(_db.pokemons, [
-              toPokemonCompanion(dto, syncedAt),
-            ]);
-          }
+          batch.insertAllOnConflictUpdate(_db.pokemons, [
+            for (final dto in page) toPokemonCompanion(dto, syncedAt),
+          ]);
 
-          // 3. Las relaciones se reemplazan completas. Es decir, se borran las
-          // de estos Pokémon y se vuelven a insertar tal como vienen de la API.
           batch.deleteWhere(_db.pokemonTypes, (t) => t.pokemonId.isIn(ids));
           batch.deleteWhere(_db.pokemonAbilities, (t) => t.pokemonId.isIn(ids));
           for (final dto in page) {

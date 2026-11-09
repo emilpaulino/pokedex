@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:graphql/client.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'connection_status.dart';
 
 /// Consulta mínima para saber si PokeAPI responde

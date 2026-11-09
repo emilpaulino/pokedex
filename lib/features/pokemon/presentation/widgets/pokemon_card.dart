@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../core/cache/pokemon_image_cache.dart';
 import '../../../../app/theme.dart';
 import '../../domain/entities/pokemon.dart';
@@ -69,8 +70,8 @@ class PokemonCard extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: pokemon.artworkUrl,
                 cacheManager: pokemonImageCache,
-                memCacheWidth:
-                (96 * MediaQuery.devicePixelRatioOf(context)).round(),
+                memCacheWidth: (96 * MediaQuery.devicePixelRatioOf(context))
+                    .round(),
                 fit: BoxFit.contain,
                 placeholder: (context, url) => const Center(
                   child: SizedBox.square(
