@@ -14,12 +14,14 @@ query HealthCheck {
 }
 ''';
 
+final _healthDocument = gql(_healthQuery);
+
 /// Le pregunta a PokeAPI si responde y, si no, usa el tipo de error
 /// para saber si falta Internet o si falla el servicio.
 Future<ConnectionStatus> checkPokeApi(GraphQLClient client) async {
   try {
     final result = await client
-        .query(QueryOptions(document: gql(_healthQuery)))
+        .query(QueryOptions(document: _healthDocument))
         .timeout(const Duration(seconds: 5));
 
     if (!result.hasException) return ConnectionStatus.online;

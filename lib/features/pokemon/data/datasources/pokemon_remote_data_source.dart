@@ -9,8 +9,8 @@ import '../../../../core/network/graphql_client_provider.dart';
 import '../dtos/pokemon_dto.dart';
 import 'pokemon_queries.dart';
 
-/// Tiempo máximo de espera por solicitud.
 const requestTimeout = Duration(seconds: 30);
+final _pageDocument = gql(fetchPokemonPageQuery);
 
 abstract class PokemonRemoteDataSource {
   Future<List<PokemonDto>> fetchPokemonPage({
@@ -35,7 +35,7 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
       result = await _client
           .query(
             QueryOptions(
-              document: gql(fetchPokemonPageQuery),
+              document: _pageDocument,
               variables: {'limit': limit, 'offset': offset},
             ),
           )
