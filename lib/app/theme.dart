@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 ThemeData buildAppTheme() {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFD3263A)),
+    appBarTheme: const AppBarTheme(
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark, // Android
+        statusBarBrightness: Brightness.light, // iPhone
+        systemNavigationBarColor: Color(0xFFF8F9FC),
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarContrastEnforced: false,
+      ),
+    ),
   );
 }
 
