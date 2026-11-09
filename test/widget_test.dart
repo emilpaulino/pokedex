@@ -15,7 +15,7 @@ class FakePokemonRepository implements PokemonRepository {
   Stream<List<Pokemon>> watchPokemons() => Stream.value(const []);
 
   @override
-  Future<Failure?> refresh() async => null;
+  Future<Failure?> refresh({bool force = false}) async => null;
 
   @override
   Stream<DateTime?> watchLastSync() => Stream.value(null);

@@ -13,11 +13,13 @@ class CatalogSyncController extends Notifier<CatalogSyncState> {
   @override
   CatalogSyncState build() => const CatalogSyncState();
 
-  Future<void> refresh() async {
+  Future<void> refresh({bool force = false}) async {
     if (state.isSyncing) return;
 
     state = const CatalogSyncState(isSyncing: true);
-    final failure = await ref.read(pokemonRepositoryProvider).refresh();
+    final failure = await ref
+        .read(pokemonRepositoryProvider)
+        .refresh(force: force);
     state = CatalogSyncState(failure: failure);
   }
 }

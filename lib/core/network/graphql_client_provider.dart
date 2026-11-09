@@ -7,8 +7,9 @@ final graphQLClientProvider = Provider<GraphQLClient>((ref) {
   return GraphQLClient(
     link: HttpLink(pokeApiUrl),
     cache: GraphQLCache(),
+    queryRequestTimeout: null,
     defaultPolicies: DefaultPolicies(
-      query: Policies(fetch: FetchPolicy.networkOnly),
+      query: Policies(fetch: FetchPolicy.noCache),
     ),
   );
 });

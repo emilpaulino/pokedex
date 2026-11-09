@@ -9,5 +9,5 @@ abstract class PokemonRepository {
   Stream<DateTime?> watchLastSync();
 
   /// Pide datos nuevos a la API y los guarda.
-  Future<Failure?> refresh();
+  Future<Failure?> refresh({bool force = false});
 }
