@@ -5,7 +5,7 @@ sealed class Failure {
 
 class NetworkFailure extends Failure {
   const NetworkFailure()
-      : super('Sin conexión a Internet. Mostrando los datos guardados.');
+      : super('Sin conexión a Internet. Revisa tu conexión e inténtalo de nuevo.');
 }
 
 class TimeoutFailure extends Failure {
