@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// Fondo general de la app
+const appBackgroundColor = Color(0xFFF8F9FC);
+
+/// Fondo de la barra de búsqueda
+const searchFieldColor = Color(0xFFEDEEF2);
+
 ThemeData buildAppTheme() {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFD3263A)),
+    scaffoldBackgroundColor: appBackgroundColor,
     appBarTheme: const AppBarTheme(
+      backgroundColor: appBackgroundColor,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: true,
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark, // Android
         statusBarBrightness: Brightness.light, // iPhone
-        systemNavigationBarColor: Color(0xFFF8F9FC),
+        systemNavigationBarColor: appBackgroundColor,
         systemNavigationBarIconBrightness: Brightness.dark,
         systemNavigationBarContrastEnforced: false,
       ),

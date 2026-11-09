@@ -5,6 +5,8 @@ import '../../../../core/cache/pokemon_image_cache.dart';
 import '../../../../app/theme.dart';
 import '../../domain/entities/pokemon.dart';
 
+const _imageSize = 96.0;
+
 class PokemonCard extends StatelessWidget {
   const PokemonCard({super.key, required this.pokemon, required this.color});
 
@@ -66,12 +68,13 @@ class PokemonCard extends StatelessWidget {
 
             // Sprite del pokemon
             SizedBox.square(
-              dimension: 96,
+              dimension: _imageSize,
               child: CachedNetworkImage(
                 imageUrl: pokemon.artworkUrl,
                 cacheManager: pokemonImageCache,
-                memCacheWidth: (96 * MediaQuery.devicePixelRatioOf(context))
-                    .round(),
+                memCacheWidth:
+                    (_imageSize * MediaQuery.devicePixelRatioOf(context))
+                        .round(),
                 fit: BoxFit.contain,
                 placeholder: (context, url) => const Center(
                   child: SizedBox.square(

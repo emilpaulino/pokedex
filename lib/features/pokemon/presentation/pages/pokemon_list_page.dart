@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/theme.dart';
+import '../../../../app/widgets/connection_indicator.dart';
 import '../../domain/entities/pokemon.dart';
+import '../providers/catalog_sync_provider.dart';
 import '../providers/pokemon_list_provider.dart';
 import '../widgets/pokemon_card.dart';
-import '../../../../app/theme.dart';
-import '../providers/catalog_sync_provider.dart';
-import '../../../../app/widgets/connection_indicator.dart';
 
 class PokemonListPage extends ConsumerWidget {
   const PokemonListPage({super.key});
@@ -17,12 +17,7 @@ class PokemonListPage extends ConsumerWidget {
     final sync = ref.watch(catalogSyncProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FC),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleSpacing: 20,
         title: const Text(
           'Pokédex',
           style: TextStyle(
@@ -51,7 +46,7 @@ class PokemonListPage extends ConsumerWidget {
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 filled: true,
-                fillColor: const Color(0xFFEDEEF2),
+                fillColor: searchFieldColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25),
                   borderSide: BorderSide.none,
