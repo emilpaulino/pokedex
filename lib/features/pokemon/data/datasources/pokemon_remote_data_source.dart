@@ -48,19 +48,17 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
       final error = result.exception!;
       final linkError = error.linkException;
 
-      // El servidor respondió, pero con un error HTTP (429, 500, etc.).
       if (linkError is HttpLinkServerException) {
         if (linkError.response.statusCode == 429) {
           throw const RateLimitException();
         }
         throw ServerException('HTTP ${linkError.response.statusCode}');
       }
-      // No se pudo llegar al servidor.
+
       if (linkError != null) {
         throw NetworkException(linkError.toString());
       }
-      // La API respondió con errores. Aunque traiga algunos datos, no se usan,
-      // para no reemplazar los datos que ya están guardados.
+
       throw ServerException(error.graphqlErrors.toString());
     }
 
@@ -75,8 +73,6 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
   }
 }
 
-final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
-  ref,
-) {
+final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((ref,) {
   return PokemonRemoteDataSourceImpl(ref.watch(graphQLClientProvider));
 });

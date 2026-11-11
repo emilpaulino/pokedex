@@ -73,7 +73,6 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
   Future<void> savePokemonPage(List<PokemonDto> page, DateTime syncedAt) async {
     final ids = page.map((dto) => dto.id).toList();
 
-    // Un solo registro por tipo y por habilidad.
     final types = <int, TypesCompanion>{};
     final abilities = <int, AbilitiesCompanion>{};
     for (final dto in page) {

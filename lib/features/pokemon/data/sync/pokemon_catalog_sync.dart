@@ -20,7 +20,6 @@ class PokemonCatalogSync {
 
   bool _isRunning = false;
 
-  /// Devuelve null si todo salió bien, o un Failure si algo falló.
   Future<Failure?> sync() async {
     // Si ya hay una sincronización en curso, no se empieza otra.
     if (_isRunning) return null;
