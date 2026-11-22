@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/connectivity/connection_monitor.dart';
 import '../../core/connectivity/connection_status.dart';
+import '../../core/network/api_outage_simulation.dart';
 import '../../features/pokemon/presentation/providers/catalog_sync_provider.dart';
 import '../../features/pokemon/presentation/providers/pokemon_list_provider.dart';
 import '../theme.dart';
@@ -25,6 +27,9 @@ class ConnectionIndicator extends ConsumerWidget {
           builder: (_) => const _StatusSheet(),
         );
       },
+      onLongPress: kDebugMode
+          ? () => _toggleOutageSimulation(context, ref)
+          : null,
       child: SizedBox(
         width: 84,
         height: 48,
@@ -46,6 +51,28 @@ class ConnectionIndicator extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Solo en modo debug: activa o desactiva la simulación de API caída.
+  void _toggleOutageSimulation(BuildContext context, WidgetRef ref) {
+    ref.read(apiOutageSimulationProvider.notifier).toggle();
+    final isActive = ref.read(apiOutageSimulationProvider);
+
+    debugPrint(
+      '[Simulación] API caída ${isActive ? 'activada' : 'desactivada'}',
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isActive
+              ? 'Simulación activada: PokeAPI no responde'
+              : 'Simulación desactivada',
+        ),
+      ),
+    );
+
+    // Comprueba enseguida para que el indicador cambie sin esperar.
+    ref.read(connectionMonitorProvider.notifier).checkNow();
   }
 }
 

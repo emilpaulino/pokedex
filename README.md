@@ -280,7 +280,7 @@ Cada estado tiene **ícono y texto**, no solo color. Al tocar el indicador se co
 | Resultado | Estado |
 |---|---|
 | Respondió bien | En línea |
-| Error HTTP o errores GraphQL | Sin servicio |
+| El servidor respondió con un error (HTTP, cuerpo que no es JSON o errores GraphQL) | Sin servicio |
 | No se pudo llegar al servidor | Sin conexión |
 | Se agotó el tiempo | Se desempata con `connectivity_plus`. Si hay red, Sin servicio. Si no, Sin conexión |
 
@@ -291,6 +291,15 @@ Cada estado tiene **ícono y texto**, no solo color. Al tocar el indicador se co
 - Al tocar el indicador.
 
 Nunca hay dos comprobaciones a la vez (variable `_isChecking`). Al pasar de *Sin conexión* o *Sin servicio* a *En línea*, la app **sincroniza sola**.
+
+**Simular que la API no responde.** Solo en modo debug (`flutter run`):
+
+1. Mantener presionado el indicador. Aparece «Simulación activada: PokeAPI no responde».
+2. Desde ese momento, todas las consultas van a `https://graphql.pokeapi.co/simulacion-api-caida`, una dirección del mismo servidor que responde **404 con una página HTML**, como en una caída real. Con la red activa, el indicador muestra *Sin servicio*, nunca *En línea*.
+3. Deslizar hacia abajo en la lista para pedir una actualización. La consola muestra los reintentos: `[Sync] Página con offset 0 falló (ServerException). Reintento 1/3 en 2 s`, luego 4 s y 8 s. Los datos guardados se conservan.
+4. Mantener presionado otra vez para desactivarla. El indicador vuelve a *En línea* y la app sincroniza sola.
+
+El interruptor está en `lib/core/network/api_outage_simulation.dart` y el cliente lo consulta en cada petición con `Link.split`.
 
 ---
 

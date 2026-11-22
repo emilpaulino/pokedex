@@ -28,8 +28,9 @@ Future<ConnectionStatus> checkPokeApi(GraphQLClient client) async {
 
     final linkError = result.exception!.linkException;
 
-    // El servidor respondió, pero con un error HTTP
-    if (linkError is HttpLinkServerException) {
+    // El servidor respondió con un error (con cuerpo JSON o no): hay Internet.
+    if (linkError is HttpLinkServerException ||
+        linkError is HttpLinkParserException) {
       return ConnectionStatus.serviceUnavailable;
     }
 

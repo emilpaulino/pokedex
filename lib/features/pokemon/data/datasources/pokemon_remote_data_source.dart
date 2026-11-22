@@ -48,11 +48,18 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
       final error = result.exception!;
       final linkError = error.linkException;
 
+      int? statusCode;
+
       if (linkError is HttpLinkServerException) {
-        if (linkError.response.statusCode == 429) {
-          throw const RateLimitException();
-        }
-        throw ServerException('HTTP ${linkError.response.statusCode}');
+        statusCode = linkError.response.statusCode;
+      }
+      if (linkError is HttpLinkParserException) {
+        statusCode = linkError.response.statusCode;
+      }
+
+      if (statusCode != null) {
+        if (statusCode == 429) throw const RateLimitException();
+        throw ServerException('HTTP $statusCode');
       }
 
       if (linkError != null) {

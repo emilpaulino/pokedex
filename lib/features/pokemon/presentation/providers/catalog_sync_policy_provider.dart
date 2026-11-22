@@ -38,8 +38,8 @@ final catalogSyncPolicyProvider = Provider<void>((ref) {
   ref.listen<ConnectionStatus>(connectionMonitorProvider, (previous, next) {
     final recovered =
         next == ConnectionStatus.online &&
-            (previous == ConnectionStatus.offline ||
-                previous == ConnectionStatus.serviceUnavailable);
+        (previous == ConnectionStatus.offline ||
+            previous == ConnectionStatus.serviceUnavailable);
     if (recovered) sync('Conexión recuperada');
     updateTimer();
   });
