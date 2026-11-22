@@ -73,6 +73,8 @@ class PokemonRemoteDataSourceImpl implements PokemonRemoteDataSource {
   }
 }
 
-final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((ref,) {
+final pokemonRemoteDataSourceProvider = Provider<PokemonRemoteDataSource>((
+  ref,
+) {
   return PokemonRemoteDataSourceImpl(ref.watch(graphQLClientProvider));
 });

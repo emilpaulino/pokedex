@@ -67,4 +67,3 @@ final connectionMonitorProvider =
     NotifierProvider<ConnectionMonitor, ConnectionStatus>(
       ConnectionMonitor.new,
     );
-

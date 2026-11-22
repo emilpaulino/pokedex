@@ -58,7 +58,13 @@ class PokemonListPage extends ConsumerWidget {
               child: pokemons.when(
                 data: (list) {
                   // Si hay Pokémon guardados: se muestra la lista.
-                  if (list.isNotEmpty) return _PokemonList(pokemons: list);
+                  if (list.isNotEmpty) {
+                    return _PokemonList(
+                      pokemons: list,
+                      onRefresh: () =>
+                          ref.read(catalogSyncProvider.notifier).refresh(),
+                    );
+                  }
 
                   // Si No hay Pokémon y se están descargando.
                   if (sync.isSyncing) {
@@ -96,23 +102,30 @@ class PokemonListPage extends ConsumerWidget {
 }
 
 class _PokemonList extends StatelessWidget {
-  const _PokemonList({required this.pokemons});
+  const _PokemonList({required this.pokemons, required this.onRefresh});
 
   final List<Pokemon> pokemons;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: pokemons.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
-        final pokemon = pokemons[index];
-        return PokemonCard(
-          pokemon: pokemon,
-          color:
-              pokemonTypeColors[pokemon.primaryType?.name] ?? cardFallbackColor,
-        );
-      },
+    // Deslizar hacia abajo sincroniza el catálogo.
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: pokemons.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final pokemon = pokemons[index];
+          return PokemonCard(
+            pokemon: pokemon,
+            color:
+                pokemonTypeColors[pokemon.primaryType?.name] ??
+                cardFallbackColor,
+          );
+        },
+      ),
     );
   }
 }

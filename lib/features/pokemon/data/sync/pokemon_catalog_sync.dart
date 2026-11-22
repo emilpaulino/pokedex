@@ -1,10 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../../../core/error/error_mapper.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/sync/sync_status.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/sync/retry_policy.dart';
 import '../datasources/pokemon_local_data_source.dart';
 import '../datasources/pokemon_remote_data_source.dart';
 
@@ -36,10 +39,15 @@ class PokemonCatalogSync {
       while (true) {
         await _save(SyncStatus.running, offset);
 
-        final page = await remote.fetchPokemonPage(
-          limit: pageSize,
-          offset: offset,
+        final page = await retryWithBackoff(
+          () => remote.fetchPokemonPage(limit: pageSize, offset: offset),
+          shouldRetry: _isTemporary,
+          onRetry: (retry, wait, error) => debugPrint(
+            '[Sync] Página con offset $offset falló (${error.runtimeType}). '
+            'Reintento $retry/$syncMaxRetries en ${wait.inSeconds} s',
+          ),
         );
+
         await local.savePokemonPage(page, syncedAt);
         offset += page.length;
 
@@ -73,6 +81,10 @@ class PokemonCatalogSync {
       ),
     );
   }
+
+  /// Solo reintenta errores de tiempo agotado y error del servidor.
+  static bool _isTemporary(Object error) =>
+      error is RequestTimeoutException || error is ServerException;
 }
 
 final pokemonCatalogSyncProvider = Provider<PokemonCatalogSync>((ref) {
