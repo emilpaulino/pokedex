@@ -7,12 +7,29 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
+    // Catálogo
+    PokemonSpecies,
     Pokemons,
     Types,
     PokemonTypes,
     Abilities,
     PokemonAbilities,
+    // Detalle
+    Evolutions,
+    EggGroups,
+    SpeciesEggGroups,
+    VersionGroups,
+    Moves,
+    PokemonMoves,
+    PokemonGames,
+    TypeEfficacies,
+    // Datos del usuario
     Favorites,
+    AppSettings,
+    TriviaResults,
+    TriviaAnswers,
+    Achievements,
+    // Sincronización
     SyncMetadata,
   ],
 )

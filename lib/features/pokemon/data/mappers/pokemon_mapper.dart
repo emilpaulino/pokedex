@@ -6,17 +6,57 @@ import '../../domain/entities/pokemon.dart';
 import '../../domain/entities/pokemon_type.dart';
 import '../datasources/pokemon_local_data_source.dart';
 
-PokemonsCompanion toPokemonCompanion(PokemonDto dto, DateTime syncedAt) {
-  return PokemonsCompanion(
+PokemonSpeciesCompanion toSpeciesCompanion(
+  PokemonSpeciesDto dto,
+  DateTime syncedAt,
+) {
+  return PokemonSpeciesCompanion(
     id: Value(dto.id),
     name: Value(dto.name),
     displayName: Value(dto.displayName),
-    nationalDexNumber: Value(dto.speciesId),
+    nationalDexNumber: Value(
+      dto.id,
+    ), // en PokeAPI el id de la especie es su número
+    generationId: Value(dto.generationId),
+    updatedAt: Value(syncedAt),
+  );
+}
+
+PokemonsCompanion toPokemonCompanion(PokemonDto dto, DateTime syncedAt) {
+  final stats = dto.stats;
+  return PokemonsCompanion(
+    id: Value(dto.id),
+    speciesId: Value(dto.species.id),
+    name: Value(dto.name),
+    isDefault: Value(dto.isDefault),
     height: Value(dto.height / 10), // decímetros → metros
     weight: Value(dto.weight / 10), // hectogramos → kilogramos
     artworkUrl: Value(dto.artworkUrl ?? ''),
+    shinyArtworkUrl: Value(dto.shinyArtworkUrl),
+    spriteUrl: Value(dto.spriteUrl),
+    hp: Value(stats.hp),
+    attack: Value(stats.attack),
+    defense: Value(stats.defense),
+    specialAttack: Value(stats.specialAttack),
+    specialDefense: Value(stats.specialDefense),
+    speed: Value(stats.speed),
+    baseStatTotal: Value(_baseStatTotal(stats)),
     updatedAt: Value(syncedAt),
   );
+}
+
+/// Suma de las 6 estadísticas, o null si falta alguna.
+int? _baseStatTotal(PokemonStatsDto stats) {
+  final values = [
+    stats.hp,
+    stats.attack,
+    stats.defense,
+    stats.specialAttack,
+    stats.specialDefense,
+    stats.speed,
+  ];
+  if (values.contains(null)) return null;
+  return values.fold<int>(0, (sum, value) => sum + value!);
 }
 
 List<TypesCompanion> toTypeCompanions(PokemonDto dto) {
@@ -62,11 +102,12 @@ List<PokemonAbilitiesCompanion> toPokemonAbilityCompanions(PokemonDto dto) {
 
 Pokemon toPokemonEntity(PokemonWithTypes data) {
   final row = data.pokemon;
+  final species = data.species;
   return Pokemon(
     id: row.id,
     name: row.name,
-    displayName: row.displayName,
-    nationalDexNumber: row.nationalDexNumber,
+    displayName: species.displayName,
+    nationalDexNumber: species.nationalDexNumber,
     height: row.height,
     weight: row.weight,
     artworkUrl: row.artworkUrl,

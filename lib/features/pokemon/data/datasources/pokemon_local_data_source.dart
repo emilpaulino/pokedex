@@ -8,9 +8,10 @@ import '../dtos/pokemon_dto.dart';
 import '../mappers/pokemon_mapper.dart';
 
 class PokemonWithTypes {
-  PokemonWithTypes(this.pokemon, this.types);
+  PokemonWithTypes(this.pokemon, this.species, this.types);
 
   final PokemonRow pokemon;
+  final PokemonSpeciesRow species;
   final List<TypeRow> types;
 }
 
@@ -34,33 +35,40 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
 
   @override
   Stream<List<PokemonWithTypes>> watchPokemons() {
-    // Una sola consulta que une Pokemons, PokemonTypes y Types.
+    // Una sola consulta: forma normal + su especie + sus tipos.
     final query =
         _db.select(_db.pokemons).join([
-          leftOuterJoin(
-            _db.pokemonTypes,
-            _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
-          ),
-          leftOuterJoin(
-            _db.types,
-            _db.types.id.equalsExp(_db.pokemonTypes.typeId),
-          ),
-        ])..orderBy([
-          OrderingTerm.asc(_db.pokemons.nationalDexNumber),
-          OrderingTerm.asc(_db.pokemonTypes.slot),
-        ]);
+            innerJoin(
+              _db.pokemonSpecies,
+              _db.pokemonSpecies.id.equalsExp(_db.pokemons.speciesId),
+            ),
+            leftOuterJoin(
+              _db.pokemonTypes,
+              _db.pokemonTypes.pokemonId.equalsExp(_db.pokemons.id),
+            ),
+            leftOuterJoin(
+              _db.types,
+              _db.types.id.equalsExp(_db.pokemonTypes.typeId),
+            ),
+          ])
+          ..where(_db.pokemons.isDefault.equals(true))
+          ..orderBy([
+            OrderingTerm.asc(_db.pokemonSpecies.nationalDexNumber),
+            OrderingTerm.asc(_db.pokemonTypes.slot),
+          ]);
 
     return query.watch().map((rows) {
-      // Agrupa un Pokémon con todos sus tipos.
+      // Agrupa cada forma con todos sus tipos.
       final result = <int, PokemonWithTypes>{};
 
       for (final row in rows) {
         final pokemon = row.readTable(_db.pokemons);
+        final species = row.readTable(_db.pokemonSpecies);
         final type = row.readTableOrNull(_db.types);
 
         final entry = result.putIfAbsent(
           pokemon.id,
-          () => PokemonWithTypes(pokemon, []),
+          () => PokemonWithTypes(pokemon, species, []),
         );
         if (type != null) entry.types.add(type);
       }
@@ -73,9 +81,11 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
   Future<void> savePokemonPage(List<PokemonDto> page, DateTime syncedAt) async {
     final ids = page.map((dto) => dto.id).toList();
 
+    final species = <int, PokemonSpeciesCompanion>{};
     final types = <int, TypesCompanion>{};
     final abilities = <int, AbilitiesCompanion>{};
     for (final dto in page) {
+      species[dto.species.id] = toSpeciesCompanion(dto.species, syncedAt);
       for (final type in toTypeCompanions(dto)) {
         types[type.id.value] = type;
       }
@@ -87,7 +97,10 @@ class PokemonLocalDataSourceImpl implements PokemonLocalDataSource {
     try {
       await _db.transaction(() async {
         await _db.batch((batch) {
-          // Tipos y habilidades primero ya que las tablas intermedias apuntan a ellos.
+          batch.insertAllOnConflictUpdate(
+            _db.pokemonSpecies,
+            species.values.toList(),
+          );
           batch.insertAllOnConflictUpdate(_db.types, types.values.toList());
           batch.insertAllOnConflictUpdate(
             _db.abilities,
