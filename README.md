@@ -60,7 +60,6 @@ flutter run
 | `graphql` | Pedirle los datos a PokeAPI | Envía las consultas cambiando solo algunos valores (por ejemplo, la página) y permite saber qué tipo de error ocurrió (si el servidor respondió con error, si no hay Internet o si la consulta tuvo problemas). |
 | `connectivity_plus` | Saber cuándo el teléfono se conecta o se desconecta de una red | Avisa en el momento en que cambia la red, para volver a revisar la conexión sin esperar. |
 | `cached_network_image` + `flutter_cache_manager` | Guardar las imágenes en el teléfono | Descarga cada imagen la primera vez que aparece en pantalla y después la muestra sin Internet. Se le puso un límite propio de cuántas guarda y por cuánto tiempo. Ver [ADR-002](docs/adr/002-imagenes-cache-bajo-demanda.md). |
-| `go_router` | Moverse entre pantallas | Todas las rutas van en un solo archivo (`router.dart`). Por ahora solo tiene la lista. Cuando se agregue el detalle, la pantalla recibirá solo el número del Pokémon y buscará sus datos en la base del teléfono. |
 | `drift_dev` + `build_runner` | Crear automáticamente el código de las tablas de Drift | Drift los necesita para funcionar. Solo se usan en desarrollo, no van dentro de la app. |
 | `flutter_lints` | Reglas que revisan que el código esté bien escrito | Las usa `flutter analyze`. Solo se usan mientras se programa, no van dentro de la app. |
 
@@ -118,8 +117,7 @@ El código sigue **Clean Architecture** con tres capas. La pantalla (presentatio
 lib/
 ├── main.dart                  → arranca la app
 ├── app/                       → une las piezas de toda la app
-│   ├── app.dart               → widget raíz que sincroniza al abrir y al reconectar
-│   ├── router.dart            → rutas (go_router)
+│   ├── app.dart               → widget raíz: tema, primera pantalla y política de sincronización
 │   ├── theme.dart             → colores y estilos
 │   └── widgets/
 │       └── connection_indicator.dart
@@ -143,7 +141,7 @@ lib/
         │   └── sync/          → motor de sincronización del catálogo
         └── presentation/
             ├── pages/         → pantalla de la lista
-            ├── providers/     → lista, última sincronización y controlador del sync
+            ├── providers/     → lista, última sincronización, controlador y política del sync
             └── widgets/       → tarjeta de Pokémon
 docs/
 └── adr/                       → decisiones de arquitectura (ADR)
